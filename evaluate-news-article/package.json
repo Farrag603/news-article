@@ -4,7 +4,7 @@
   "description": "A web app to evaluate news articles with NLP using the MeaningCloud API.",
   "main": "src/server/index.js",
   "scripts": {
-    "start": "node src/server/index.js",
+    "start": "node src/server/index.js && webpack serve --config webpack.dev.js --mode development",
     "dev": "webpack serve --config webpack.dev.js --mode development",
     "build": "webpack --config webpack.prod.js --mode production",
     "test": "jest"
@@ -27,6 +27,7 @@
     "css-minimizer-webpack-plugin": "^5.0.0",
     "html-webpack-plugin": "^5.5.3",
     "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
     "mini-css-extract-plugin": "^2.7.5",
     "sass": "^1.82.0",
     "sass-loader": "^13.3.3",

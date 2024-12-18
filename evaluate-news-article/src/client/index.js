@@ -1,64 +1,62 @@
-import './styles/style.scss'
-import { checkURL } from './js/checkURL'
+import "./styles/style.scss";
+import { checkURL } from "./js/checkURL";
+import { updateUI } from "./js/updateUI";
 
-document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('form')
-    const errorDiv = document.getElementById('error')
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("form");
+  const errorDiv = document.getElementById("error");
 
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault()
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-        const inputField = document.getElementById('article-url')
-        const url = inputField.value
+    const inputField = document.getElementById("article-url");
+    const url = inputField.value.trim(); // Trim leading/trailing spaces
 
-        // Validate URL
-        if (!checkURL(url)) {
-            errorDiv.textContent = 'Invalid URL! Please enter a valid URL.'
-            return
-        }
+    // Clear any previous error message
+    errorDiv.textContent = "";
 
-        try {
-            // Send URL to server
-            const response = await fetch('http://localhost:8081/api', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ url })
-            })
-
-            if (!response.ok) {
-                throw new Error('Failed to fetch data from the server.')
-            }
-
-            const data = await response.json()
-
-            // Debugging: Log response data
-            console.log('API Data:', data)
-
-            // Update UI with API response
-            updateUI(data)
-        } catch (error) {
-            errorDiv.textContent = 'Error: Unable to fetch data from the server.'
-            console.error(error)
-        }
-    })
-
-    // Function to update the UI
-    const updateUI = (data) => {
-        const textElement = document.getElementById('text')
-        const agreementElement = document.getElementById('agreement')
-        const subjectivityElement = document.getElementById('subjectivity')
-        const confidenceElement = document.getElementById('confidence')
-        const ironyElement = document.getElementById('irony')
-        const scoreTagElement = document.getElementById('score_tag')
-
-        // Update fields with API data
-        if (textElement) textElement.textContent = `Text: ${data.text}`
-        if (agreementElement) agreementElement.textContent = `Agreement: ${data.agreement}`
-        if (subjectivityElement) subjectivityElement.textContent = `Subjectivity: ${data.subjectivity}`
-        if (confidenceElement) confidenceElement.textContent = `Confidence: ${data.confidence}`
-        if (ironyElement) ironyElement.textContent = `Irony: ${data.irony}`
-        if (scoreTagElement) scoreTagElement.textContent = `Score Tag: ${data.score_tag}`
+    // Validate URL
+    if (url === "") {
+      errorDiv.textContent = "Please enter a URL.";
+      return;
     }
-})
+
+    if (!checkURL(url)) {
+      errorDiv.textContent = "Invalid URL! Please enter a valid URL.";
+      return;
+    }
+
+    try {
+      // Disable submit button to prevent multiple submissions
+      const submitButton = document.querySelector('button[type="submit"]');
+      submitButton.disabled = true;
+
+      // Show loading message
+      errorDiv.textContent = "Loading...";
+
+      // Send URL to the server
+      const response = await fetch("http://localhost:8081/api", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ url }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch data from the server.");
+      }
+
+      const data = await response.json();
+
+      // Update UI with API response
+      updateUI(data);
+    } catch (error) {
+      errorDiv.textContent = "Error: Unable to fetch data from the server.";
+      console.error(error);
+    } finally {
+      // Re-enable submit button and hide loading message
+      submitButton.disabled = false;
+    }
+  });
+});
