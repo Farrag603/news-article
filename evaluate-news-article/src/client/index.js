@@ -26,9 +26,10 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    const submitButton = document.querySelector('button[type="submit"]');
+
     try {
       // Disable submit button to prevent multiple submissions
-      const submitButton = document.querySelector('button[type="submit"]');
       submitButton.disabled = true;
 
       // Show loading message
@@ -51,11 +52,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Update UI with API response
       updateUI(data);
+
+      // Clear the loading message
+      errorDiv.textContent = "";
     } catch (error) {
       errorDiv.textContent = "Error: Unable to fetch data from the server.";
       console.error(error);
     } finally {
-      // Re-enable submit button and hide loading message
+      // Re-enable submit button
       submitButton.disabled = false;
     }
   });
